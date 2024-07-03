@@ -187,10 +187,6 @@
         ];
         map.setMaxBounds(bounds);
 
-        // Create and add markers for start and end points
-        const startMarker = new mapboxgl.Marker({ color: '#3887be' }).setLngLat([-122.662323, 45.523751]).addTo(map);
-        const endMarker = new mapboxgl.Marker({ color: '#f02' }).setLngLat([-122.663584, 45.523751]).addTo(map);
-
         // Variables to store start and end points
         let startPoint = null;
         let endPoint = null;
@@ -439,6 +435,7 @@
                     .addTo(map)
                     .on('click', () => {
                         logAction(`Charging station clicked: ${station.name}`);
+                        
                     });
             });
         }
@@ -624,6 +621,7 @@
 
             const routeDetails = await getRouteDetails(startPoint, endPoint);
 
+            /*
             const query = await fetch(
                 `https://api.mapbox.com/directions/v5/mapbox/driving/${startPoint.lng},${startPoint.lat};${endPoint.lng},${endPoint.lat}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
                 { method: 'GET' }
@@ -660,7 +658,9 @@
                         'line-opacity': 0.75
                     }
                 });
+            
             }
+                */
 
             // Assuming you have elements with IDs or you can set them in your HTML
             document.querySelector('#instructions').innerHTML = `
@@ -674,6 +674,126 @@
                 <p>Range of current battery: </p>
             `;
         }
+
+        // Function to get the route to travel between any route type
+        async function getRoute(routeType) {
+            console.log(`Get route for type ${routeType}`);
+
+            let startPoint, midPoint, endPoint;
+
+            // Set the start and end points from pointSource and endpointsource as used in case 1
+            startPoint = {
+                lng: pointSource.data.features[0].geometry.coordinates[0],
+                lat: pointSource.data.features[0].geometry.coordinates[1]
+            };
+            endPoint = {
+                lng: endpointsource.data.features[0].geometry.coordinates[0],
+                lat: endpointsource.data.features[0].geometry.coordinates[1]
+            };
+
+            switch (routeType) {
+                case 1:
+                    // Use the first charging station for case 2
+                    midPoint = {
+                        lng: chargingStations[0].coordinates[0],
+                        lat: chargingStations[0].coordinates[1]
+                    };
+                    await fetchAndDisplayRoute(startPoint, midPoint); // Fetch route to charging station
+                    await fetchAndDisplayRoute(midPoint, endPoint);  // Fetch route from charging station to end
+                    break;
+                case 2:
+                    // Use the second charging station for case 3
+                    midPoint = {
+                        lng: chargingStations[1].coordinates[0],
+                        lat: chargingStations[1].coordinates[1]
+                    };
+                    await fetchAndDisplayRoute(startPoint, midPoint); // Fetch route to charging station
+                    await fetchAndDisplayRoute(midPoint, endPoint);  // Fetch route from charging station to end
+                    break;
+                default:
+                    // Direct route from startPoint to endPoint
+                    await fetchAndDisplayRoute(startPoint, endPoint);
+                    return;
+            }
+        }
+
+    
+        // Function to fetch and display a route between two points
+        async function fetchAndDisplayRoute(start, end, routeType) {
+            console.log(`Fetching route from ${start.lng},${start.lat} to ${end.lng},${end.lat}`);
+
+            const query = await fetch(
+                `https://api.mapbox.com/directions/v5/mapbox/driving/${start.lng},${start.lat};${end.lng},${end.lat}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                { method: 'GET' }
+            );
+            const json = await query.json();
+            const data = json.routes[0];
+            const route = data.geometry.coordinates;
+            const geojson = {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                    type: 'LineString',
+                    coordinates: route
+                }
+            };
+
+            const routeId = `route-${start.lng}-${start.lat}-${end.lng}-${end.lat}`;
+            if (map.getSource(routeId)) {
+                map.getSource(routeId).setData(geojson);
+            } else {
+                map.addLayer({
+                    id: routeId,
+                    type: 'line',
+                    source: {
+                        type: 'geojson',
+                        data: geojson
+                    },
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#3887be',
+                        'line-width': 5,
+                        'line-opacity': 0.75
+                    }
+                });
+            }
+        }
+
+        // Function to remove all route layers from the map
+        function removeRoutes() {
+            // This function will need to remove any route layers added to the map
+            // Example:
+            map.getStyle().layers.forEach(layer => {
+                if (layer.id.startsWith('route-')) {
+                    map.removeLayer(layer.id);
+                    map.removeSource(layer.id);
+                }
+            });
+        }
+
+        /*
+        async function fetchAndDisplayRoute(start, end) {
+            console.log(`Fetching route from ${start.lng},${start.lat} to ${end.lng},${end.lat}`);
+            try {
+                const response = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${start.lng},${start.lat};${end.lng},${end.lat}?geometries=geojson&access_token=${mapboxgl.accessToken}`);
+                const json = await response.json();
+                if (json.routes && json.routes.length > 0) {
+                    const data = json.routes[0];
+                    console.log('Route data received:', data);
+                    displayRoute(data.geometry.coordinates);  // Ensure this function correctly handles the route display
+                } else {
+                    console.error('No routes found or error in response:', json);
+                }
+            } catch (error) {
+                console.error('Error fetching or processing route:', error);
+            }
+        }
+
+        */
+
 
         // Function to add points of interest (POIs) to the map
         async function addPOIs(searchTerm, emoji, latitude, longitude, station_name) {
@@ -751,13 +871,16 @@
 
         // Add route time/distance to instructions & update charging station details
         map.on('load', async () => {
+            await getRoute(0);  // Ensure this is awaited properly
             await updateAndDisplayRouteInstructions();  // Ensure this is awaited properly
             await updateChargingStationDetails();  // Ensure this is awaited properly
             addChargingStations();  // You might need to re-add stations to reflect updated data
         });
 
+
         // Add event listeners to the map after it has loaded
         map.on('load', () => {
+            
             // Event listener for map clicks
             map.on('click', (event) => {
                 const clickCoords = [event.lngLat.lng, event.lngLat.lat];
@@ -772,8 +895,16 @@
                     logAction(`Clicked within buffer zone of end point`);
                 }
 
+                if(!checkBufferZone(clickCoords, chargingStations[0].coordinates, bufferRadius) && !checkBufferZone(clickCoords, chargingStations[1].coordinates, bufferRadius)) {
+                    removeRoutes();
+                    getRoute(0);
+                    console.log('Current route type set to 0');
+                }
+
                 chargingStations.forEach(station => {
                     if (checkBufferZone(clickCoords, station.coordinates, bufferRadius)) {
+                        removeRoutes();
+                        getRoute(chargingStations.indexOf(station) + 1);
                         logAction(`Clicked within buffer zone of ${station.name}`);
                     }
                 });
@@ -799,19 +930,8 @@
                 // }
             });
 
-            // Event listener for start marker clicks
-            startMarker.getElement().addEventListener('click', () => {
-                logAction(`Start marker clicked at: ${startMarker.getLngLat()}`);
-            });
-
-            // Event listener for end marker clicks
-            endMarker.getElement().addEventListener('click', () => {
-                logAction(`End marker clicked at: ${endMarker.getLngLat()}`);
-            });
-
             // Add charging stations to the map
             addChargingStations();
-
 
             // Add layers for start and end points
             map.addLayer({
