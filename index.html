@@ -193,7 +193,6 @@
         let poiMarkers = [];
 
         // Function to add a marker at a specific point on the map
-        /*
         const instructions = [ 
             { title: "Current time", info: " " }, 
             { title: "Address of origin", info: " " },
@@ -203,7 +202,6 @@
             { title: "State of charge of battery", info: " " },
             { title: "Range of current battery", info: " " }
         ];
-        */
 
 
         // Array to store charging station data
@@ -277,14 +275,66 @@
             emoji: '📍'
         };
 
-        // Function to log user actions in the log box
-        function logAction(action) {
-            const logBox = document.getElementById('log-box');
-            const timestamp = new Date().toLocaleTimeString();
-            logBox.innerHTML += `<p>[${timestamp}] ${action}</p>`;
-            logBox.scrollTop = logBox.scrollHeight;
+        /*
+        // Path to the CSV file
+        const csvFilePath = 'logBox.csv';
+
+        // CSV writer setup
+        const csvWriter = createObjectCsvWriter({
+            path: csvFilePath,
+            append: fs.existsSync(csvFilePath), // Append if file exists
+            header: [
+                {id: 'timestamp', title: 'TIMESTAMP'},
+                {id: 'actionType', title: 'ACTION_TYPE'},
+                {id: 'location', title: 'LOCATION'},
+                {id: 'coordinates', title: 'COORDINATES'}
+            ]
+        });
+
+        // Function to log data
+        function logData(actionType, location, coordinates) {
+            const timestamp = new Date().toLocaleString();
+            csvWriter.writeRecords([{ timestamp, actionType, location, coordinates }])
+                .then(() => console.log('Data was added to the CSV file successfully.'));
+            console.log(`Timestamp: ${timestamp}, Action: ${actionType}, Location: ${location}, Coordinates: ${coordinates}`);
+           return;
+        }
+        */
+
+        let dataLog = [];
+
+        function logData(actionType, location, coordinates) {
+            const entry = {
+                timestamp: new Date().toISOString(),
+                actionType: actionType,
+                location: location,
+                coordinates: coordinates
+            };
+            dataLog.push(entry);
+            console.log("Data logged:", entry);
         }
 
+        function downloadCSV(data) {
+            const csvRows = ["timestamp,actionType,location,coordinates"];
+            
+            for (const row of data) {
+                csvRows.push(`"${row.timestamp}","${row.actionType}","${row.location}","${row.coordinates}"`);
+            }
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'logData.csv');
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        }
+        
+
+        /*
         // Function to copy logs to the clipboard
         function copyLogs() {
             const logBox = document.getElementById('log-box');
@@ -300,6 +350,7 @@
 
         // Add event listener to the copy button
         document.getElementById('copy-button').addEventListener('click', copyLogs);
+        */
 
         // Function to calculate the distance between two points using the Haversine formula
         function haversineDistance(coords1, coords2) {
@@ -392,7 +443,7 @@
                 .setPopup(popup)
                 .addTo(map);
             window.emojiMarker.getPopup().open();
-            logAction(`Emoji marker added at: ${point.lng}, ${point.lat}`);
+            //logAction(`Emoji marker added at: ${point.lng}, ${point.lat}`);
         }
 
         // Function to add an emoji marker with feedback at a specific point on the map
@@ -416,7 +467,7 @@
                     .addTo(map);
                 window.currentPopup = newPopup;
             }
-            logAction(`Nearby ${poi_type}s added for ${stationName}`);
+            //logAction(`Nearby ${poi_type}s added for ${stationName}`);
         }
 
         // Function to add charging stations to the map
@@ -434,8 +485,7 @@
                     .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent))
                     .addTo(map)
                     .on('click', () => {
-                        logAction(`Charging station clicked: ${station.name}`);
-                        
+                        logData(`Charging Station Opened`, `${station.name}`, `${station.coordinates}`);
                     });
             });
         }
@@ -469,7 +519,7 @@
 
         // Function to show more information about a charging station
         function showMoreInfo(stationName, infoType, infoContent) {
-            logAction(`Button clicked: ${infoType} for ${stationName}`);
+            logData(`Button Clicked`, `${infoType} for ${stationName}`,  null);
 
             const content = `<p style="font-size: 16px; padding: 5px;">${infoContent}</p>`;
 
@@ -479,24 +529,23 @@
                     <div style="max-height: 500px; max-width: 400px; padding: 10px;">
                         <h3 style="font-size: 20px; margin-top: 0; margin-bottom: 10px;">${stationName}</h3>
                         ${content}
-                        <button class="popup-button" style="font-size: 18px; padding: 10px 20px;" onclick="restoreOriginalContent('${stationName}')">Back</button>
+                        <button class="popup-button" style="font-size: 18px; padding: 10px 20px;" onclick="restoreOriginalContent('${stationName}', '${infoType}')">Back</button>
                     </div>
                 `;
             }
         }
 
         // Function to restore the original content of the popup
-        function restoreOriginalContent(stationName) {
+        function restoreOriginalContent(stationName, infoType) {
             const station = chargingStations.find(station => station.name === stationName);
             const popups = document.getElementsByClassName('mapboxgl-popup-content');
             if (popups.length > 0) {
                 popups[0].innerHTML = generatePopupContent(station);
             }
-            logAction(`Back button clicked for ${stationName}`);
+            logData(`Back Button Clicked`, `${infoType} for ${stationName}`, null);
         }
 
 
-        /*
         // Function to create instruction buttons
         function createInstructionButtons() {
             const instructionsDiv = document.getElementById('instructions');
@@ -512,12 +561,23 @@
                 button.onclick = () => showInstructionInfo(index);
                 instructionsDiv.appendChild(button);
             });
+
+            const button = document.createElement('button');
+            button.className = 'instruction-button';
+            button.textContent = 'Download Logs';
+            button.style.fontSize = '16px';
+            button.style.padding = '10px';
+            button.style.margin = '5px';
+            button.style.width = '100%';
+            button.onclick = () => downloadCSV(dataLog);
+            instructionsDiv.appendChild(button)
         }
 
         // Function to show instruction information using the Map Guide popup
         function showInstructionInfo(index) {
             const instruction = instructions[index];
-            logAction(`Button clicked: ${instruction.title}`);
+            logData(`Button Clicked`, `${instruction.title}`,  null);
+
 
             const content = `<p style="font-size: 16px; padding: 5px;">${instruction.info}</p>`;
 
@@ -533,7 +593,7 @@
 
         // Function to handle the back button click in the Map Guide popup
         function handleBackButtonClick(title) {
-            logAction(`Back button clicked for ${title}`);
+            logData(`Back Button Clicked`, `${title}`,  null);
             restoreMapGuide();
         }
 
@@ -554,7 +614,6 @@
 
         // Call the function to create buttons when the page loads
         createInstructionButtons();
-        */
 
         // Function to get the time to travel between two points
         async function getRouteDetails(startPoint, endPoint) {
@@ -673,7 +732,27 @@
                 <p>State of charge of battery: </p>
                 <p>Range of current battery: </p>
             `;
+            
+
+            //updateInstructions(routeDetails);
         }
+
+        /*
+        // Function to update instructions with route details
+        function updateInstructions(routeDetails) {
+            instructions[3].info = `${routeDetails.distance.toFixed(2)} Miles`;
+            instructions[4].info = `${routeDetails.time} Minutes`;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const instructionsElement = document.querySelector('#instructions');
+            instructionsElement.innerHTML = `<h3>General Info</h3>`;
+            instructions.forEach(instruction => {
+                instructionsElement.innerHTML += `<p>${instruction.title}: ${instruction.info}</p>`;
+            });
+        }
+        */
 
         // Function to get the route to travel between any route type
         async function getRoute(routeType) {
@@ -797,7 +876,7 @@
 
         // Function to add points of interest (POIs) to the map
         async function addPOIs(searchTerm, emoji, latitude, longitude, station_name) {
-            logAction(`Adding POIs for ${station_name} - ${searchTerm}`);
+            //logAction(`Adding POIs for ${station_name} - ${searchTerm}`);
 
             const startPoint = { lat: latitude, lng: longitude };
 
@@ -822,7 +901,7 @@
                         <h4>Travel time to ${station_name}: ${duration} min</h4>`))
                     .addTo(map)
                     .on('click', () => {
-                        logAction(`POI clicked: ${feature.text}`);
+                        //logAction(`POI clicked: ${feature.text}`);
                     });
 
                 poiMarkers.push({ marker, coordinates: [lng, lat], logMessage: `Clicked within buffer zone of POI: ${feature.text}` });
@@ -884,16 +963,9 @@
             // Event listener for map clicks
             map.on('click', (event) => {
                 const clickCoords = [event.lngLat.lng, event.lngLat.lat];
-                logAction(`Map clicked at coordinates: ${clickCoords}`);
+                logData(`Map Clicked`, `Map`, `${clickCoords}`);
 
                 const bufferRadius = 0.1; // Buffer radius in kilometers
-
-                if (checkBufferZone(clickCoords, [-122.662323, 45.523751], bufferRadius)) {
-                    logAction(`Clicked within buffer zone of start point`);
-                }
-                if (checkBufferZone(clickCoords, [-122.59626181271541, 45.56511868081539], bufferRadius)) {
-                    logAction(`Clicked within buffer zone of end point`);
-                }
 
                 if(!checkBufferZone(clickCoords, chargingStations[0].coordinates, bufferRadius) && !checkBufferZone(clickCoords, chargingStations[1].coordinates, bufferRadius)) {
                     removeRoutes();
@@ -905,7 +977,7 @@
                     if (checkBufferZone(clickCoords, station.coordinates, bufferRadius)) {
                         removeRoutes();
                         getRoute(chargingStations.indexOf(station) + 1);
-                        logAction(`Clicked within buffer zone of ${station.name}`);
+                        console.log(`Clicked within buffer zone of ${station.name}`);
                     }
                 });
 
