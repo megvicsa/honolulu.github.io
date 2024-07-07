@@ -765,6 +765,7 @@
             }
                 */
 
+                /*
             // Assuming you have elements with IDs or you can set them in your HTML
             document.querySelector('#instructions').innerHTML = `
                 <h3>General Info</h3>
@@ -776,27 +777,16 @@
                 <p>State of charge of battery: </p>
                 <p>Range of current battery: </p>
             `;
-            
+            */
 
-            //updateInstructions(routeDetails);
+            updateInstructions(routeDetails);
         }
 
-        /*
         // Function to update instructions with route details
         function updateInstructions(routeDetails) {
             instructions[3].info = `${routeDetails.distance.toFixed(2)} Miles`;
             instructions[4].info = `${routeDetails.time} Minutes`;
-            updateDisplay();
         }
-
-        function updateDisplay() {
-            const instructionsElement = document.querySelector('#instructions');
-            instructionsElement.innerHTML = `<h3>General Info</h3>`;
-            instructions.forEach(instruction => {
-                instructionsElement.innerHTML += `<p>${instruction.title}: ${instruction.info}</p>`;
-            });
-        }
-        */
 
         // Function to get the route to travel between any route type
         async function getRoute(routeType) {
@@ -995,7 +985,7 @@
         // Add route time/distance to instructions & update charging station details
         map.on('load', async () => {
             await getRoute(0);  // Ensure this is awaited properly
-            //await updateAndDisplayRouteInstructions();  // Ensure this is awaited properly
+            await updateAndDisplayRouteInstructions();  // Ensure this is awaited properly
             await updateChargingStationDetails();  // Ensure this is awaited properly
             addChargingStations();  // You might need to re-add stations to reflect updated data
         });
