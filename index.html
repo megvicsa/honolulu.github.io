@@ -195,13 +195,16 @@
 
         // Function to add a marker at a specific point on the map
         const instructions = [ 
-            { title: "Current time", info: " " }, 
-            { title: "Address of origin", info: " " },
-            { title: "Address of destination", info: " " },
+            { title: "Current time", info: "9:55 AM" }, 
+            { title: "Address of origin", info: "3070 Numana Rd, Urban Honolulu, HI 96819" },
+            { title: "Address of destination", info: "1350 Sand Island Parkway, Honolulu, HI 96819" },
             { title: "Distance of destination", info: " " },
             { title: "Estimated travel time to destination", info: " " },
-            { title: "State of charge of battery", info: " " },
-            { title: "Range of current battery", info: " " }
+            { title: "State of charge of battery", info: "12%" },
+            { title: "Range of current battery", info: "36 Minutes" },
+            { title: "Type of Chargin Socket", info: "J1772" },
+            { title: "Estimated Drive-time with Current Charge", info: "~~" },
+            { title: "kWh Needed to Fully Charge Your Car", info: "~~" }
         ];
 
 
@@ -221,19 +224,19 @@
 
                 waitTime: 'No Wait',
                 plugs: 'J-1772 (8 Plugs) 5.76 kW',
-                chargeTime: ' Minutes',
+                chargeTime: '720 Minutes to Full Charge',
                 socketAvalability: '5 Available, 3 In Use',
 
-                energySource: 'Grid',
+                energySource: '80% Grid, 20% Thermal',
 
                 fees: '$2.25 per hour Charging',
                 parking: 'Free Parking',
 
-                coffee: 'Yes',
-                grocery: 'Yes',
-                sportsClothes: 'Yes',
+                coffee: 'Yes (0.4 Miles)',
+                grocery: 'Yes (0.5 Miles)',
+                sportsClothes: 'Yes (0.5 Miles)',
                 
-                rating: '⭐⭐⭐⭐' 
+                rating: '⭐⭐⭐⭐ (46 Reviews)' 
             },
             {
                 coordinates: [-157.886713, 21.322051],
@@ -248,19 +251,19 @@
 
                 waitTime: 'No Wait',
                 plugs: 'J-1772 (1), NACS (1)',
-                chargeTime: ' Minutes',
+                chargeTime: '600 Minutes to Full Charge',
                 socketAvalability: '2 Available',
 
-                energySource: 'Grid',
+                energySource: '95% Grid, 5% Hydro',
 
                 fees: '$5 per hour Charging',
                 parking: 'Free Parking',
 
-                coffee: 'Yes',
-                grocery: 'Yes',
-                sportsClothes: 'Yes',
+                coffee: 'Yes (0.7 Miles)',
+                grocery: 'Yes (0.8 Miles)',
+                sportsClothes: 'Yes (1.2 Miles)',
                 
-                rating: '⭐⭐⭐'
+                rating: '(0 Reivews)'
             }
         ];
 
