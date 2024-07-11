@@ -155,7 +155,7 @@
     </div>
 
     <!-- SET ALL INSTRUCTION INFO BELOW -->
-     <div id="instructions">
+    <div id="instructions">
         <h3>General Info</h3>
     </div>
 
@@ -166,10 +166,10 @@
     </div>--> 
 
     <!-- Log box div displaying user actions and providing a button to copy logs -->
-    <div id="log-box">
+    <!--<div id="log-box">
         <h3>Click Logs</h3>
         <button id="copy-button">Copy Logs</button>
-    </div>
+    </div>-->
     <script>
         // Set the Mapbox access token
         mapboxgl.accessToken = 'pk.eyJ1IjoiaGdhem1laCIsImEiOiJjbGx5NzZpc3QwYWZtM2xwcjE3a2J5bjQxIn0.cpUto7a5fO9EgSY2LCjOSQ';
@@ -179,11 +179,11 @@
             container: 'map',
             style: 'mapbox://styles/mapbox/navigation-day-v1',
             center: [-157.88132425781222,21.33023123189352],
-            zoom: 10
+            zoom: 12
         });
         const bounds = [
-            [-157.98132425781222,21.27023123189352],
-            [-157.78132425781222,21.38023123189352]
+            [-158.03132425781222,21.27023123189352],
+            [-157.73132425781222,21.40023123189352]
         ];
         map.setMaxBounds(bounds);
 
