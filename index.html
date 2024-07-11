@@ -608,16 +608,6 @@
                 button.onclick = () => showInstructionInfo(index);
                 instructionsDiv.appendChild(button);
             });
-
-            const button = document.createElement('button');
-            button.className = 'instruction-button';
-            button.textContent = 'Download Logs';
-            button.style.fontSize = '16px';
-            button.style.padding = '10px';
-            button.style.margin = '5px';
-            button.style.width = '100%';
-            button.onclick = () => downloadCSV(dataLog);
-            instructionsDiv.appendChild(button)
         }
 
         // Function to show instruction information using the Map Guide popup
