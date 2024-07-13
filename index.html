@@ -690,13 +690,13 @@
 
                 // Fetch origin to charging station details
                 const originToStation = await getRouteDetails(startPoint, stationPoint);
-                station.originDistance = `${originToStation.distance.toFixed(2)} Miles`;
-                station.originTime = `${originToStation.time} Minutes`;
+                station.originDistance = `${originToStation.distance.toFixed(2)}`;
+                station.originTime = `${originToStation.time}`;
 
                 // Fetch charging station to destination details
                 const stationToDest = await getRouteDetails(stationPoint, endPoint);
-                station.destDistance = `${stationToDest.distance.toFixed(2)} Miles`;
-                station.destTime = `${stationToDest.time} Minutes`;
+                station.destDistance = `${stationToDest.distance.toFixed(2)}`;
+                station.destTime = `${stationToDest.time}`;
 
                 console.log(`Updated station ${station.name} with distance ${station.originDistance} and ${station.destDistance}`);
             }
@@ -777,8 +777,8 @@
 
         // Function to update instructions with route details
         function updateInstructions(routeDetails) {
-            instructions[3].info = `${routeDetails.distance.toFixed(2)} Miles`;
-            instructions[4].info = `${routeDetails.time} Minutes`;
+            instructions[3].info = `${routeDetails.distance.toFixed(2)} miles`;
+            instructions[4].info = `${routeDetails.time} minutes`;
         }
 
         // Function to get the route to travel between any route type
