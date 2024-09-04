@@ -517,7 +517,7 @@
 
             let waitTimeDetails = station.waitTime.map(item => `The estimated wait time of socket ${item.type} is ${item.value} minutes.`).join('<br><br>');
             let plugDetails = station.plugNumb.map(item => `There are ${item.value} number of socket type ${item.type}.`).join('<br><br>');
-            let chargeTimeDetails = station.chargeTime.map(item => `The estimated charging time of socket ${item.type} is ${item.value} minutes to fully charge your car.`).join('<br><br>');
+            let chargeTimeDetails = station.chargeTime.map(item => `The estimated charging time of socket ${item.type} is ${item.value} minutes to full.`).join('<br><br>');
             let socketAvailabilityDetails = station.socketAvalability.map(item => `There are ${item.value} available number of socket type ${item.type}.`).join('<br><br>');
 
             return `
@@ -528,7 +528,6 @@
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'originTime', '<b>Travel time from my location:</b> ${station.originTime} minutes. <br><br>The estimated travel time from your location to ${station.name} is ${station.originTime} minutes.', '${boxId}')">Travel Time from my Location</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'destDistance', '<b>Distance to destination:</b> ${station.destDistance} miles. <br><br>The distance from ${station.name} to the destination is ${station.destDistance} miles.', '${boxId}')">Distance to Destination</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'destTime', '<b>Travel time to destination:</b> ${station.destTime} minutes. <br><br>The estimated travel time from  ${station.name} to the destination is ${station.destTime} minutes.', '${boxId}')">Travel Time to Destination</button>
-                    
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'waitTime', '<b>Wait time at station:</b><br>${waitTimeDetails}', '${boxId}')">Wait Time at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'plugs', '<b>Plugs available at station:</b><br>${plugDetails}', '${boxId}')">Plugs Available at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'chargeTime', '<b>Charge time:</b><br>${chargeTimeDetails}', '${boxId}')">Charge Time</button>
@@ -536,7 +535,7 @@
 
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'energySource', '<b>Energy source at station:</b><br>${station.energySource}.', '${boxId}')">Energy Source at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'fees', '<b>Cost to charge:</b> ${station.chargingFee}. <br><br> The price ${station.chargingFeeRate} is ${station.chargingFee}.', '${boxId}')">Cost to Charge</button>
-                    <button class="popup-button" onclick="showMoreInfo('${station.name}', 'parking', '<b>Cost to park at station:</b> ${station.parkingFee}. <br><br> The price of parking your car at the charging station ${station.parkingFeeRate} is ${station.parkingFee.toLowerCar()}.', '${boxId}')">Cost to Park at Station</button>
+                    <button class="popup-button" onclick="showMoreInfo('${station.name}', 'parking', '<b>Cost to park at station:</b> ${station.parkingFee.toLowerCase()} . <br><br> The price of parking your car at the charging station ${station.parkingFeeRate} is ${station.parkingFee}.', '${boxId}')">Cost to Park at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'coffee', '<b>Coffe shop:</b> ${station.coffee}', '${boxId}')">Coffee Shop</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'grocery', '<b>Grocery store:</b> ${station.grocery}', '${boxId}')">Grocery Store</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'sportsClothes', '<b>Sports/Clothing store:</b> ${station.sportsClothes}', '${boxId}')">Sport/Clothing Store</button>
