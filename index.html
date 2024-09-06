@@ -519,12 +519,16 @@
 
             let waitTimeDetails = station.waitTime.map(item => `The estimated wait time of socket ${item.type} is ${item.value} minutes.`).join('<br><br>');
             //let plugDetails = station.plugNumb.map(item => `There are ${item.value} number of socket type ${item.type}.`).join('<br><br>');
-            let chargeTimeDetails = station.chargeTime.map(item => `The estimated charging time of socket ${item.type} to be fully charge your car is ${item.value} minutes.`).join('<br><br>');
+            let chargeTimeDetails = station.chargeTime.map(item => `The estimated charging time of socket ${item.type} to fully charge your car is ${item.value} minutes.`).join('<br><br>');
             //let socketAvailabilityDetails = station.socketAvalability.map(item => `There are ${item.value} available number of socket type ${item.type}.`).join('<br><br>');
             let plugDetails = station.plugNumb.map(item => {
                 let availability = station.socketAvalability.find(availItem => availItem.type === item.type);
-                return `There are ${item.value} sockets of type ${item.type} (${availability ? availability.value : 0} available).`;
+                let value = Number(item.value); // Convert to a number if necessary
+                return `There ${value === 1 ? 'is' : 'are'} ${value} ${value === 1 ? 'socket' : 'sockets'} of type ${item.type} (${availability ? availability.value : 0} available).`;
             }).join('<br><br>');
+
+           
+
 
 
 
@@ -543,8 +547,8 @@
                     
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'energySource', '<b>Energy source at station:</b><br>${station.energySource}.', '${boxId}')">Energy Source at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'fees', '<b>Cost to charge:</b> ${station.chargingFee}. <br><br> The price ${station.chargingFeeRate} is ${station.chargingFee}.', '${boxId}')">Cost to Charge</button>
-                    <button class="popup-button" onclick="showMoreInfo('${station.name}', 'parking', '<b>Cost to park at station:</b> ${station.parkingFee.toLowerCase()} . <br><br> The price of parking your car at the charging station ${station.parkingFeeRate} is ${station.parkingFee}.', '${boxId}')">Cost to Park at Station</button>
-                    <button class="popup-button" onclick="showMoreInfo('${station.name}', 'coffee', '<b>Coffe shop:</b> ${station.coffee}', '${boxId}')">Coffee Shop</button>
+                    <button class="popup-button" onclick="showMoreInfo('${station.name}', 'parking', '<b>Cost to park at station:</b> ${station.parkingFee.toLowerCase()}. <br><br> The price of parking your car at the charging station ${station.parkingFeeRate} is ${station.parkingFee}.', '${boxId}')">Cost to Park at Station</button>
+                    <button class="popup-button" onclick="showMoreInfo('${station.name}', 'coffee', '<b>Coffee shop:</b> ${station.coffee}', '${boxId}')">Coffee Shop</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'grocery', '<b>Grocery store:</b> ${station.grocery}', '${boxId}')">Grocery Store</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'sportsClothes', '<b>Sports/Clothing store:</b> ${station.sportsClothes}', '${boxId}')">Sport/Clothing Store</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'rating', '', '${boxId}')">Rating</button>
@@ -593,7 +597,7 @@
             content = `<p style="font-size: 16px; padding: 5px;">${infoContent}</p>`;
 
             if (infoType === 'rating') {
-            content = `<p style="font-size: 16px; padding: 5px;"><b>Rating:</b><br><span class="stars">${station.rating}</span> <br><br> There average rating is ${station.ratingExact}, with ${station.ratingNum} reviews in total.</p>`;
+            content = `<p style="font-size: 16px; padding: 5px;"><b>Rating:</b> ${station.ratingExact}.<br><span class="stars">${station.rating}</span> <br><br> There average rating is ${station.ratingExact}, with ${station.ratingNum} reviews in total.</p>`;
                 console.log('Rating clicked');
             }
 
