@@ -95,7 +95,7 @@
         #bottom-left-info {
             bottom: 20px;
             right: 20px;
-            background-color: #8d8d8d;
+            background-color: #a5a5a5;
         }
 
         .stars {
@@ -139,7 +139,7 @@
         }
 
         .popup-button, .instruction-button {
-            background-color: #cecccc;
+            background-color: #dddddd;
             color: black;
             border: none;
             padding: 8px 16px;
@@ -209,13 +209,13 @@
 
         // Function to add a marker at a specific point on the map
         const instructions = [
-            { title: "Current time", info: "9:55 AM." }, 
-            { title: "Address of origin", info: "3070 Numana Rd, Urban Honolulu, HI 96819." },
-            { title: "Address of destination", info: "1350 Sand Island Parkway, Honolulu, HI 96819." },
-            { title: "Distance of destination", info: " " },
-            { title: "Estimated travel time to destination", info: " " },
-            { title: "State of charge of battery", info: "12% charge." },
-            { title: "Range of current battery", info: "36 minutes." },
+            { title: "Current Time", info: "9:55 AM." }, 
+            { title: "Address of Origin", info: "3070 Numana Rd, Urban Honolulu, HI 96819." },
+            { title: "Address of Destination", info: "1350 Sand Island Parkway, Honolulu, HI 96819." },
+            { title: "Distance to Destination", info: " " },
+            { title: "Estimated Time to Destination", info: " " },
+            { title: "State of Charge of Battery", info: "12% charge." },
+            { title: "Range of Current Battery", info: "36 minutes." },
             { title: "Estimated Drive Distance with Current Charge", info: "24 miles." },
             { title: "Type of Charging Socket", info: "J1772." },
             { title: "kWh Needed to Fully Charge Your Car", info: "53 kW." }
@@ -261,7 +261,8 @@
                 sportsClothes: 'Yes. <br><br> There is a sports or clothing store in walking distance 0.5 miles away.',
                 
                 rating: '★ ★ ★ ★ ✰',
-                ratingNum: '46'
+                ratingNum: '46',
+                ratingExact: '4.4'
             },
             {
                 coordinates: [-157.886713, 21.322051],
@@ -305,7 +306,8 @@
                 sportsClothes: 'Yes. <br><br> There is a sports or clothing store in walking distance 1.2 miles away.',
                 
                 rating: '★ ★ ★ ★ ✰ ',
-                ratingNum: '0'
+                ratingNum: '0',
+                ratingExact: '4.2'
             }
         ];
 
@@ -516,9 +518,15 @@
             const encodedImageUrl = encodeURIComponent(station.imageUrl);
 
             let waitTimeDetails = station.waitTime.map(item => `The estimated wait time of socket ${item.type} is ${item.value} minutes.`).join('<br><br>');
-            let plugDetails = station.plugNumb.map(item => `There are ${item.value} number of socket type ${item.type}.`).join('<br><br>');
-            let chargeTimeDetails = station.chargeTime.map(item => `The estimated charging time of socket ${item.type} is ${item.value} minutes to full.`).join('<br><br>');
-            let socketAvailabilityDetails = station.socketAvalability.map(item => `There are ${item.value} available number of socket type ${item.type}.`).join('<br><br>');
+            //let plugDetails = station.plugNumb.map(item => `There are ${item.value} number of socket type ${item.type}.`).join('<br><br>');
+            let chargeTimeDetails = station.chargeTime.map(item => `The estimated charging time of socket ${item.type} to be fully charge your car is ${item.value} minutes.`).join('<br><br>');
+            //let socketAvailabilityDetails = station.socketAvalability.map(item => `There are ${item.value} available number of socket type ${item.type}.`).join('<br><br>');
+            let plugDetails = station.plugNumb.map(item => {
+                let availability = station.socketAvalability.find(availItem => availItem.type === item.type);
+                return `There are ${item.value} sockets of type ${item.type} (${availability ? availability.value : 0} available).`;
+            }).join('<br><br>');
+
+
 
             return `
                     <h3 style="font-size: 20px; margin-top: 0; margin-bottom: 10px;">${station.name}</h3>
@@ -528,11 +536,11 @@
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'originTime', '<b>Travel time from my location:</b> ${station.originTime} minutes. <br><br>The estimated travel time from your location to ${station.name} is ${station.originTime} minutes.', '${boxId}')">Travel Time from my Location</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'destDistance', '<b>Distance to destination:</b> ${station.destDistance} miles. <br><br>The distance from ${station.name} to the destination is ${station.destDistance} miles.', '${boxId}')">Distance to Destination</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'destTime', '<b>Travel time to destination:</b> ${station.destTime} minutes. <br><br>The estimated travel time from  ${station.name} to the destination is ${station.destTime} minutes.', '${boxId}')">Travel Time to Destination</button>
+                    
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'waitTime', '<b>Wait time at station:</b><br>${waitTimeDetails}', '${boxId}')">Wait Time at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'plugs', '<b>Plugs available at station:</b><br>${plugDetails}', '${boxId}')">Plugs Available at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'chargeTime', '<b>Charge time:</b><br>${chargeTimeDetails}', '${boxId}')">Charge Time</button>
-                    <button class="popup-button" onclick="showMoreInfo('${station.name}', 'socketAvalability', '<b>Socket availability:</b><br>${socketAvailabilityDetails}', '${boxId}')">Socket Availability</button>
-
+                    
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'energySource', '<b>Energy source at station:</b><br>${station.energySource}.', '${boxId}')">Energy Source at Station</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'fees', '<b>Cost to charge:</b> ${station.chargingFee}. <br><br> The price ${station.chargingFeeRate} is ${station.chargingFee}.', '${boxId}')">Cost to Charge</button>
                     <button class="popup-button" onclick="showMoreInfo('${station.name}', 'parking', '<b>Cost to park at station:</b> ${station.parkingFee.toLowerCase()} . <br><br> The price of parking your car at the charging station ${station.parkingFeeRate} is ${station.parkingFee}.', '${boxId}')">Cost to Park at Station</button>
@@ -585,7 +593,7 @@
             content = `<p style="font-size: 16px; padding: 5px;">${infoContent}</p>`;
 
             if (infoType === 'rating') {
-                content = `<p style="font-size: 16px; padding: 5px;"><b>Rating:</b><br><span class="stars">${station.rating}</span> <br><br> There are ${station.ratingNum} total reviews.</p>`;
+            content = `<p style="font-size: 16px; padding: 5px;"><b>Rating:</b><br><span class="stars">${station.rating}</span> <br><br> There average rating is ${station.ratingExact}, with ${station.ratingNum} reviews in total.</p>`;
                 console.log('Rating clicked');
             }
 
