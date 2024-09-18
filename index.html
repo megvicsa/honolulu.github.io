@@ -103,8 +103,6 @@
             color: #0047AB	;     /* Optional: Change the color of the stars */
         }
 
-
-
         .popup-content {
             max-height: 330px;
             overflow-y: auto;
@@ -590,7 +588,7 @@
             content = `<p style="font-size: 16px; padding: 5px;">${infoContent}</p>`;
 
             if (infoType === 'rating') {
-            content = `<p style="font-size: 16px; padding: 5px;"><b>Rating:</b> ${station.ratingExact}.<br><span class="stars">${station.rating}</span> <br><br> There average rating is ${station.ratingExact}, with ${station.ratingNum} reviews in total.</p>`;
+                content = `<p style="font-size: 16px; padding: 5px;"><b>Rating:</b> ${station.ratingExact}.<br><span class="stars">${station.rating}</span> <br><br> There average rating is ${station.ratingExact}, with ${station.ratingNum} reviews in total.</p>`;
                 console.log('Rating clicked');
             }
 
